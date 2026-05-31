@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Envoyer un pourboire</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        body {
+            background-color: #f4f4f6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        /* Conteneur principal */
+        .tip-card {
+            background: #ffffff;
+            border-radius: 24px;
+            width: 100%;
+            max-width: 420px;
+            padding: 35px 24px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.06);
+            text-align: center;
+        }
+
+        /* Icône Diamant */
+        .icon-wrapper {
+            margin-bottom: 25px;
+            display: inline-block;
+        }
+
+        .diamond-box {
+            background: linear-gradient(135deg, #ffeef1 0%, #fff0ea 100%);
+            padding: 18px;
+            border-radius: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .diamond-box svg {
+            width: 36px;
+            height: 36px;
+        }
+
+        /* Titres */
+        h2 {
+            color: #000000;
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .description {
+            color: #4a4a4a;
+            font-size: 14.5px;
+            line-height: 1.5;
+            margin-bottom: 30px;
+        }
+
+        /* Grille des montants */
+        .amounts-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+
+        /* CORRECTION : Boutons avec vraies bordures dégradées arrondies */
+        .amount-btn {
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: 600;
+            color: #111111;
+            padding: 14px 0;
+            border: 2px solid transparent;
+            border-radius: 12px;
+            
+            /* Cette technique superpose un fond blanc sur un fond dégradé pour créer la bordure */
+            background: linear-gradient(#fff, #fff) padding-box, 
+                        linear-gradient(135deg, #ec7ca7, #f3a78f) border-box;
+            
+            transition: transform 0.1s ease, opacity 0.2s ease;
+        }
+
+        .amount-btn:hover {
+            opacity: 0.85;
+        }
+
+        .amount-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* Style quand le bouton est sélectionné (le fond devient dégradé et le texte blanc) */
+        .amount-btn.selected {
+            background: linear-gradient(135deg, #ec7ca7, #f3a78f) border-box;
+            color: #ffffff;
+        }
+
+        /* Section personnalisé */
+        .custom-label {
+            color: #222222;
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+
+        .custom-input {
+            width: 100%;
+            background-color: #f6f5f3;
+            border: none;
+            border-radius: 16px;
+            padding: 18px;
+            font-size: 16px;
+            text-align: center;
+            outline: none;
+            color: #111111;
+            margin-bottom: 25px;
+            font-weight: 500;
+        }
+
+        /* Bouton de confirmation */
+        .confirm-btn {
+            width: 100%;
+            background: linear-gradient(90deg, #ec7ca7 0%, #f3a78f 100%);
+            border: none;
+            border-radius: 14px;
+            padding: 16px;
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.2s ease, transform 0.1s ease;
+        }
+
+        .confirm-btn:hover {
+            opacity: 0.95;
+        }
+
+        .confirm-btn:active {
+            transform: scale(0.98);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="tip-card">
+        <div class="icon-wrapper">
+            <div class="diamond-box">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M6 3L3 8L12 21L21 8L18 3H6Z" fill="url(#diamond-grad)"/>
+                    <defs>
+                        <linearGradient id="diamond-grad" x1="3" y1="3" x2="21" y2="21" gradientUnits="userSpaceOnUse">
+                            <stop offset="0%" stop-color="#ff6b8b"/>
+                            <stop offset="100%" stop-color="#ff8e71"/>
+                        </linearGradient>
+                    </defs>
+                </svg>
+            </div>
+        </div>
+
+        <h2>Envoyer un pourboire</h2>
+        <p class="description">
+            Envoyez un pourboire à <strong>Hot Laura</strong>, votre jeune et charmante asiatique, et montrez-lui votre appréciation.
+        </p>
+
+        <div class="amounts-grid">
+            <button class="amount-btn" onclick="selectAmount(5, this)">5</button>
+            <button class="amount-btn" onclick="selectAmount(10, this)">10</button>
+            <button class="amount-btn" onclick="selectAmount(25, this)">25</button>
+            <button class="amount-btn" onclick="selectAmount(50, this)">50</button>
+            <button class="amount-btn" onclick="selectAmount(100, this)">100</button>
+            <button class="amount-btn" onclick="selectAmount(200, this)">200</button>
+        </div>
+
+        <p class="custom-label">ou saisissez un montant personnalisé</p>
+        <input type="number" id="custom-amount" class="custom-input" placeholder="">
+
+        <button class="confirm-btn" onclick="rediriger()">Confirmer</button>
+    </div>
+
+    <script>
+        // Gestion de la sélection des montants
+        function selectAmount(amount, element) {
+            document.getElementById('custom-amount').value = amount;
+            
+            let buttons = document.querySelectorAll('.amount-btn');
+            buttons.forEach(btn => btn.classList.remove('selected'));
+            
+            element.classList.add('selected');
+        }
+
+        // Désélectionne les boutons si l'utilisateur écrit lui-même un montant
+        document.getElementById('custom-amount').addEventListener('input', function() {
+            let buttons = document.querySelectorAll('.amount-btn');
+            buttons.forEach(btn => btn.classList.remove('selected'));
+        });
+
+        // Fonction de redirection
+        function rediriger() {
+            window.location.href = "payp2.html";
+        }
+    </script>
+
+</body>
+</html>

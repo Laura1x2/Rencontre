@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profil Profil</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        body {
+            background-color: #fdfbf7;
+            color: #1a1a1a;
+            display: flex;
+            justify-content: center;
+            padding: 0;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 500px;
+            background-color: #ffffff;
+            min-height: 100vh;
+            box-shadow: 0 0 10px rgba(0,0,0,0.05);
+            padding-bottom: 180px; 
+            position: relative;
+        }
+
+        /* --- Section Image du haut --- */
+        .header-image {
+            width: 100%;
+            height: 250px;
+            background-color: #e0e0e0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .header-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* --- Contenu Principal --- */
+        .content {
+            padding: 20px;
+        }
+
+        /* Badges */
+        .badge-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .badge-gold {
+            background-color: #f5c242;
+            color: #332200;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .badge-available {
+            background-color: #72c069;
+            color: white;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        /* Titre et Favori */
+        .title-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #f0f0f0;
+            padding-bottom: 20px;
+        }
+
+        .title-section h1 {
+            font-size: 22px;
+            font-weight: 700;
+            color: #000;
+            line-height: 1.3;
+            max-width: 80%;
+        }
+
+        .favorite-btn {
+            background-color: #f7f7f7;
+            border: none;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: #666;
+            font-size: 18px;
+            transition: background 0.2s;
+        }
+
+        .favorite-btn:hover {
+            background-color: #eee;
+        }
+
+        /* Localisation */
+        .location-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background-color: #fff;
+            border: 1px solid #e0e0e0;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            color: #333;
+            font-weight: 500;
+            margin-bottom: 25px;
+        }
+
+        /* --- Bloc Pourboire --- */
+        .card-tip {
+            background-color: #f9f9f9;
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+            border: 1px solid #f0f0f0;
+            margin-bottom: 25px;
+        }
+
+        .card-tip p {
+            font-size: 15px;
+            color: #666;
+            line-height: 1.4;
+            margin-bottom: 15px;
+        }
+
+        .card-btn {
+            background: linear-gradient(90deg, #e6397b 0%, #f17353 100%);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            text-decoration: none;
+            margin-bottom: 10px;
+        }
+
+        .tip-counter {
+            font-size: 13px;
+            color: #888;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+
+        /* --- Section Vidéos --- */
+        .section-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: #1a1a1a;
+        }
+
+        .video-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .video-block {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .video-card {
+            border-radius: 12px;
+            height: 120px;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            background-color: #000;
+        }
+
+        /* Conteneur de l'image de fond pour pouvoir appliquer le flou de manière isolée */
+        .video-bg {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-size: cover;
+            background-position: center;
+            z-index: 1;
+        }
+
+        /* Calque sombre par-dessus l'image pour que les textes restent lisibles */
+        .video-overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(0deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.3) 100%);
+            z-index: 2;
+        }
+
+        /* EFFET FLOU UNIQUEMENT POUR LES VIDÉOS PAYANTES */
+        .video-card.locked .video-bg {
+            filter: blur(6px) scale(1.1); /* Le scale évite les bords blancs dus au flou */
+        }
+
+        .video-content {
+            position: relative;
+            z-index: 3;
+            color: white;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .video-card i.fa-lock-open {
+            color: #72c069;
+            font-size: 24px;
+        }
+
+        .video-card i.fa-lock {
+            color: #ff4d4d;
+            font-size: 24px;
+            background-color: rgba(0, 0, 0, 0.4);
+            width: 45px;
+            height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+
+        .video-status {
+            font-size: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.6);
+        }
+
+        .video-stats {
+            font-size: 12px;
+            color: #666;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding-left: 4px;
+            font-weight: 500;
+        }
+
+        /* --- Section : Description --- */
+        .description-section {
+            background-color: #fafaf8;
+            border-radius: 16px;
+            padding: 20px;
+            border: 1px solid #eeeeee;
+            margin-bottom: 30px;
+        }
+
+        .description-text {
+            font-size: 15px;
+            color: #444444;
+            line-height: 1.6;
+            white-space: pre-line;
+        }
+
+        /* --- Mention du site --- */
+        .mention-text {
+            text-align: center;
+            font-size: 14px;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        /* --- Section des Boutons Fixes --- */
+        .fixed-action-bar {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 500px;
+            background-color: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 15px 20px;
+            box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.08);
+            border-top: 1px solid #eaeaea;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 999;
+        }
+
+        .row-buttons {
+            display: flex;
+            gap: 12px;
+            width: 100%;
+        }
+
+        .btn-main {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            height: 50px;
+            border-radius: 14px;
+            font-size: 15px;
+            font-weight: bold;
+            text-decoration: none;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-phone, .btn-whatsapp {
+            flex: 1; 
+            width: 50%;
+        }
+
+        .btn-phone {
+            background: linear-gradient(90deg, #e6397b 0%, #f17353 100%);
+            color: white;
+        }
+
+        .btn-whatsapp {
+            background-color: #53cb5b;
+            color: white;
+        }
+
+        .btn-sms {
+            width: 100%;
+            background-color: #ffffff;
+            color: #000000;
+            border: 1px solid #dcdcdc;
+        }
+
+a{
+text-decoration:none;
+
+}
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        
+        <div class="header-image">
+            <img src="image/img1.jpg" alt="Image de profil"> 
+        </div>
+
+        <div class="content">
+            
+            <div class="badge-container">
+                <div class="badge-gold">
+                    Or <i class="fa-solid fa-star"></i>
+                </div>
+                <div class="badge-available">
+                    <i class="fa-solid fa-calendar-days"></i> Disponible
+                </div>
+            </div>
+
+            <div class="title-section">
+                <h1>Laura la sexy </h1>
+                <button class="favorite-btn">
+                    <i class="fa-regular fa-heart"></i>
+                </button>
+            </div>
+
+            <div class="location-badge">
+                <i class="fa-solid fa-location-dot"></i> Karlshorst, Berlin
+            </div>
+
+            <div class="card-tip">
+                <p>Ils apprécient ce qu'ils voient. Montrez votre reconnaissance.</p>
+                <a href="pou.html" class="card-btn">Envoyer un p2ourboire &nbsp;<i class="fa-solid fa-coins"></i></a>
+                <div class="tip-counter">
+                    <i class="fa-solid fa-heart" style="color: #e6397b;"></i> 54 personnes ont envoyé un pourboire
+                </div>
+            </div>
+
+            <h2 class="section-title">Mes Vidéos</h2>
+            <div class="video-grid">
+                
+                 <div class="video-block">
+                   <a href="video.html"> <div class="video-card">
+                        <div class="video-bg" style="background-image: url('image/img.jpg');"></div> 
+                  <div class="video-overlay"></div>
+                        <div class="video-content">
+                            <i class="fa-solid fa-lock-open"></i>
+                            <span class="video-status">Vidéo Gratuite</span>
+                        </div>
+                    </div></a> 
+                    <div class="video-stats">
+                        <i class="fa-solid fa-eye"></i> 1 245 visualisations
+                    </div>
+                </div>
+
+                 <div class="video-block">
+                    
+<a href="payp.html"><div class="video-card locked">
+                        <div class="video-bg" style="background-image: url('image/img1.jpg');"></div>
+                        <div class="video-overlay"></div>
+                        <div class="video-content">
+                            <i class="fa-solid fa-lock"></i>
+                            <span class="video-status">Premium</span>
+                        </div>
+                    </div>
+                    <div class="video-stats">
+                        <i class="fa-solid fa-cart-shopping"></i> 142 achats
+                    </div>
+                </div></a>
+
+                <div class="video-block">
+                    <a href="payp.html"><div class="video-card locked">
+                        <div class="video-bg" style="background-image: url('image/img5.jpg');"></div>
+                        <div class="video-overlay"></div>
+                        <div class="video-content">
+                            <i class="fa-solid fa-lock"></i>
+                            <span class="video-status">Premium</span>
+                        </div>
+                    </div>
+                    <div class="video-stats">
+                        <i class="fa-solid fa-cart-shopping"></i> 89 achats
+                    </div>
+                </div></a>
+ 
+                <div class="video-block">
+                   <a href="payp.html"> <div class="video-card locked">
+                        <div class="video-bg" style="background-image: url('image/img3.jpg');"></div>
+                        <div class="video-overlay"></div>
+                        <div class="video-content">
+                            <i class="fa-solid fa-lock"></i>
+                            <span class="video-status">Premium</span>
+                        </div>
+                    </div>
+                    <div class="video-stats">
+                        <i class="fa-solid fa-cart-shopping"></i> 213 achats
+                    </div>
+                </div></a>
+
+            </div>
+
+            <h2 class="section-title">À propos de moi</h2>
+            <div class="description-section">
+                <p class="description-text">Bonjour, je m'appelle Laura. Je suis une jeune femme douce, attentionnée et passionnée. J'aime partager des moments complices, agréables et mémorables. 
+
+Chaque rencontre avec moi est unique, basée sur le respect et la bonne humeur. N'hésitez pas à regarder mes vidéos exclusives ou à me contacter directement via WhatsApp ou SMS pour plus de détails. À très vite !</p>
+            </div>
+
+            
+        </div>
+
+        <div class="fixed-action-bar">
+            <div class="row-buttons">
+                <a href="tel:+4915216417088" class="btn-main btn-phone">
+                    <i class="fa-solid fa-phone"></i> +4917615636505
+                </a>
+                <a href="https://wa.me/+4915216417088" class="btn-main btn-whatsapp">
+                    <i class="fa-brands fa-whatsapp"></i> WhatsApp
+                </a>
+            </div>
+            <a href="sms:+4915216417088" class="btn-main btn-sms">
+                <i class="fa-solid fa-comment-sms"></i> SMS
+            </a>
+        </div>
+
+    </div>
+
+</body>
+</html>

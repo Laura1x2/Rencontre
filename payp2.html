@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Paiement - Stripe Checkout Simulation</title>
+    <style>
+        :root {
+            --primary-color: #635bff;
+            --primary-hover: #0a2540;
+            --text-color: #0a2540;
+            --text-secondary: #425466;
+            --border-color: #e6ebf1;
+            --error-color: #df1b41;
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: #ffffff;
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+        }
+
+        /* Layout en deux colonnes */
+        .checkout-layout {
+            display: flex;
+            width: 100%;
+            min-height: 100vh;
+        }
+
+        /* Colonne Gauche : Infos Produit */
+        .product-sidebar {
+            flex: 1;
+            background-color: #f8f9fa;
+            border-right: 1px solid #f1f3f5;
+            display: flex;
+            justify-content: flex-end;
+            padding: 80px 40px;
+        }
+
+        .product-content {
+            width: 100%;
+            max-width: 380px;
+        }
+
+        .back-link {
+            display: flex;
+            align-items: center;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 40px;
+        }
+
+        .back-link svg {
+            width: 16px;
+            height: 16px;
+            margin-right: 8px;
+            fill: currentColor;
+        }
+
+        .company-title {
+            font-size: 16px;
+            color: var(--text-secondary);
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+
+        .product-name {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .price {
+            font-size: 36px;
+            font-weight: 800;
+            color: var(--text-color);
+        }
+
+        /* Colonne Droite : Formulaire */
+        .payment-form-section {
+            flex: 1;
+            background-color: #ffffff;
+            display: flex;
+            justify-content: flex-start;
+            padding: 80px 40px;
+        }
+
+        .form-content {
+            width: 100%;
+            max-width: 440px;
+            padding-left: 40px;
+        }
+
+        /* Styles des éléments du formulaire */
+        .form-row {
+            margin-bottom: 24px;
+        }
+
+        label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: var(--text-secondary);
+        }
+
+        .input-group {
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.03);
+            transition: border-color 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        .input-group:focus-within {
+            border-color: #80e2ff;
+            box-shadow: 0 0 0 3px rgba(128, 226, 255, 0.25);
+        }
+
+        .input-field {
+            width: 100%;
+            border: none;
+            outline: none;
+            padding: 14px 16px;
+            font-size: 15px;
+            color: var(--text-color);
+            background: transparent;
+        }
+
+        .input-field::placeholder {
+            color: #aab7c4;
+        }
+
+        .field-split {
+            display: flex;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .field-split .input-field:first-child {
+            border-right: 1px solid var(--border-color);
+        }
+
+        .submit-btn {
+            width: 100%;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 14px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.15s ease;
+            box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.06);
+            margin-top: 12px;
+        }
+
+        .submit-btn:hover {
+            background-color: var(--primary-hover);
+        }
+
+        /* Écrans d'états (Chargement et Erreur) */
+        .state-container {
+            display: none;
+            padding: 60px 0;
+            text-align: left;
+        }
+
+        .spinner {
+            width: 36px;
+            height: 36px;
+            border: 3px solid rgba(99, 91, 255, 0.15);
+            border-top-color: var(--primary-color);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-bottom: 20px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .error-icon {
+            width: 44px;
+            height: 44px;
+            background-color: #fdf2f2;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .error-icon svg {
+            width: 22px;
+            height: 22px;
+            fill: var(--error-color);
+        }
+
+        .status-title {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .status-desc {
+            font-size: 15px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 28px;
+        }
+
+        .btn-retry {
+            display: inline-block;
+            background: none;
+            border: none;
+            color: var(--primary-color);
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .btn-retry:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive pour mobile */
+        @media (max-width: 768px) {
+            .checkout-layout {
+                flex-direction: column;
+            }
+            .product-sidebar, .payment-form-section {
+                flex: none;
+                justify-content: center;
+                padding: 40px 20px;
+            }
+            .form-content {
+                padding-left: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="checkout-layout">
+        
+        <div class="product-sidebar">
+            <div class="product-content">
+                <a href="#" class="back-link">
+                    <svg viewBox="0 0 24 24">
+                    Paiement en attente
+                </a>
+                <p class="company-title">Visa/Mastercard</p>
+                <h1 class="product-name"></h1>
+                <p class="price"></p>
+            </div>
+        </div>
+
+        <div class="payment-form-section">
+            <div class="form-content">
+                
+                <form id="checkout-form">
+                    <div class="form-row">
+                        <label for="email">Adresse e-mail</label>
+                        <div class="input-group">
+                            <input type="email" id="email" class="input-field" placeholder="exemple@domaine.com" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <label>Informations de paiement</label>
+                        <div class="input-group">
+                            <input type="text" id="card-num" class="input-field" placeholder="4242 4242 4242 4242" required maxlength="19">
+                            
+                            <div class="field-split">
+                                <input type="text" id="card-exp" class="input-field" placeholder="MM / AA" required maxlength="5">
+                                <input type="password" id="card-cvc" class="input-field" placeholder="CVC" required maxlength="3">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <label for="card-name">Nom sur la carte</label>
+                        <div class="input-group">
+                            <input type="text" id="card-name" class="input-field" placeholder="Jean Dupont" required>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="submit-btn">Payer</button>
+                </form>
+
+                <div id="loading-state" class="state-container">
+                    <div class="spinner"></div>
+                    <p style="font-weight: 500; color: var(--text-secondary);">Traitement de votre commande sécurisée...</p>
+                </div>
+
+                <div id="error-state" class="state-container">
+                    <div class="error-icon">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+                        </svg>
+                    </div>
+                    <h2 class="status-title" style="color: var(--error-color);">Votre carte a été déclinée</h2>
+                    <p class="status-desc">La tentative de prélèvement a échoué. Veuillez vérifier les numéros ou contacter votre banque pour autoriser les transactions en ligne.</p>
+                    <button class="btn-retry" onclick="resetCheckout()">Essayer une autre carte bancaire →</button>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // Espace automatique tous les 4 chiffres de la carte
+        document.getElementById('card-num').addEventListener('input', function () {
+            this.value = this.value.replace(/[^\d]/g, '').replace(/(.{4})/g, '$1 ').trim();
+        });
+
+        // Slash automatique pour la date d'expiration
+        document.getElementById('card-exp').addEventListener('input', function () {
+            this.value = this.value.replace(/[^\d]/g, '').replace(/^(..)/, '$1/');
+        });
+
+        // Logique de simulation au clic sur Payer
+        document.getElementById('checkout-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            // Masquer le formulaire, afficher le chargement
+            document.getElementById('checkout-form').style.display = 'none';
+            document.getElementById('loading-state').style.display = 'block';
+
+            // Simulation d'une attente réseau de 2,5 secondes
+            setTimeout(function() {
+                document.getElementById('loading-state').style.display = 'none';
+                document.getElementById('error-state').style.display = 'block';
+            }, 5000);
+        });
+
+        // Revenir en arrière pour retenter le coup
+        function resetCheckout() {
+            document.getElementById('error-state').style.display = 'none';
+            document.getElementById('checkout-form').style.display = 'block';
+            document.getElementById('checkout-form').reset();
+        }
+    </script>
+</body>
+</html>
